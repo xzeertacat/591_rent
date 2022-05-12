@@ -1,38 +1,7 @@
 # 超簡單一鍵推播 591 租屋資訊完全免 Coding－透過 Google Sheet 與 LINE Notify 
 
 ----
-
-### 2022/01/23 更新：
-新年快樂～修復之前寫死 Cookie 導致的問題。
-Github:
-[https://github.com/dang113108/591_rent](https://github.com/dang113108/591_rent)
-Commit: [https://github.com/dang113108/591_rent/commit/4d6de2f7ee527cf450f17894fcc17935062fe895](https://github.com/dang113108/591_rent/commit/4d6de2f7ee527cf450f17894fcc17935062fe895)
-
-----
-
-### 2021/11/08 更新：
-修復因 591 改版導致整組壞掉的問題！
-Github: [https://github.com/dang113108/591_rent/tree/dev](https://github.com/dang113108/591_rent/tree/dev)
-
-----
-
-### 2021/09/08 更新：
-感謝邦友 [flier268](https://ithelp.ithome.com.tw/users/20132779/profile), [travis668](https://github.com/travis668) 幫忙修復因 591 改版導致抓不到 cover image 的問題！
-Github: [https://github.com/dang113108/591_rent/tree/dev](https://github.com/dang113108/591_rent/tree/dev)
-
-----
-
-### 2021/02/22 更新：
-感謝邦友 [Chil](https://ithelp.ithome.com.tw/users/20127063/profile) 幫忙抓到一個 Bug，如果有在之前嘗試使用失敗的朋友再麻煩覆蓋最新版本的 Code 或直接重來一次，謝謝！
-Github: [https://github.com/dang113108/591_rent/tree/dev](https://github.com/dang113108/591_rent/tree/dev)
-
-----
-
-現在房子合約是到六月底，有鑑於租的地方離公司及市區有大概半小時的車程，因此在過完年後的二月中我認為差不多可以開始找下一間房子了。  
-
-剛好我的朋友 [Robin](https://ithelp.ithome.com.tw/users/20110242/articles) 在我們的群組分享了他寫的 [rentHouse](https://github.com/aiyu666/rentHouse) 這個工具，透過 node.js 自己去架設一個 server 來爬 591 的資訊並且推播到 LINE Notify，讓我們可以即時追蹤新發布的物件，效果其實已經相當不錯。~~但是我沒用，對不起，我沒用~~  
-
-但這次要分享的算是基於他的想法以及我之前使用過 Google Sheet 的經驗來開發的，透過 Google Apps Script 內建的「觸發條件」我們可以設定每分鐘爬一次 591 的資訊，並且一樣推播到 LINE Notify 外，我們還可以將這些資料統整至 Google Sheet 上，去篩選哪些是我可以考慮的，而哪些是我不想要的；而最重要的－不需要任何指令、npm、或安裝額外的東西，只要根據這篇文章的教學，任何人都可以自己架設一個！
+使用 Google Sheet 來開發，透過 Google Apps Script 內建的「觸發條件」我們可以設定每分鐘爬一次 591 的資訊，並且一樣推播到 LINE Notify 外，我們還可以將這些資料統整至 Google Sheet 上，去篩選哪些是我可以考慮的，而哪些是我不想要的；而最重要的－不需要任何指令、npm、或安裝額外的東西，只要根據這篇文章的教學，任何人都可以自己架設一個！
 
 # 功能介紹
 * 每分鐘透過你設定的篩選條件到 591 網站上爬蟲並將資訊上傳至 Google Sheet 及推播到 LINE Notify
@@ -55,7 +24,7 @@ Github: [https://github.com/dang113108/591_rent/tree/dev](https://github.com/dan
 開始設定！
 
 # 第一步，複製 Google Sheet
-Google Sheet link: [591 Rent Template](https://docs.google.com/spreadsheets/d/1uQu2jAXHHs8P6cW2blyQX5n2tjwdPIHNNdo5VxTNXy4/edit?usp=sharing)
+Google Sheet link: [591 Rent Template](https://docs.google.com/spreadsheets/d/1RNPswSwyFKk8XgH-K2v3wVpiN-RC78syVpDP-FzOlx4/edit?usp=sharing)
 
 1. 點進去連結後，記得要先登入你的 Google 帳號
 2. 點選「檔案 > 建立副本」
@@ -201,5 +170,5 @@ LINE Notify 首頁：[https://notify-bot.line.me/zh_TW/](https://notify-bot.line
 
 ----
 
-以上分享，有任何問題歡迎留言提問 : )
+原開發者:
 Github: [https://github.com/dang113108/591_rent](https://github.com/dang113108/591_rent)
