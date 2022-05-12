@@ -13,8 +13,17 @@
 
 const list_sheet_name = "list";
 const line_notify_token = "LINE_NOTIFY_TOKEN";
-const search_city = "新北市";
-const search_query = "?is_format_data=1&is_new_list=1&type=1&region=3&section=26,44,43,38&searchtype=1&kind=2&other=balcony_1&showMore=1&option=washer&multiNotice=not_cover,all_sex,boy&order=posttime&orderType=desc&rentprice=1,12500";
+const search_city = "台中市";
+const search_queryList = [
+  "?is_format_data=1&is_new_list=1&type=1&region=8&rentprice=,25000&multiRoom=3,4&section=104,103,101,102&searchtype=1&keywords=逢甲大學&order=posttime&orderType=desc&other=pet&showMore=1",
+  "?is_format_data=1&is_new_list=1&type=1&region=8&rentprice=,25000&multiRoom=3,4&section=104,103,101,102&searchtype=1&order=posttime&orderType=desc&other=pet&showMore=1&keywords=%E6%B0%B4%E6%B9%B3"];
+
+/*
+ TAG 部分只列出指定的項目
+ 1  -> 屋主直租  2  -> 近捷運  3  -> 拎包入住  4  -> 近商圈  5  -> 隨時可遷入  6  -> 可開伙  7  -> 可養寵  8  -> 有車位  10 -> 有電梯
+ 13 -> 南北通透  14 -> 免管理費  16 -> 新上架
+*/
+const filter_tags = ["7","8","10"];
 
 function check_rent_item_no_duplicated(search_sheet, post_id) {
   let list_sheet = SpreadsheetApp.getActive().getSheetByName(search_sheet);
@@ -74,12 +83,21 @@ function get_formated_rent_info(search_sheet, rent_result) {
     let rent_area = rent_item["area"];
     let rent_location = rent_item["location"];
     let rent_floor = rent_item["floor_str"];
+    let rent_role_name = rent_item["role_name"];
+    let rent_role_contact = rent_item["contact"];
+    let rent_kind_name = rent_item["kind_name"];
+    let rent_room_str = rent_item["room_str"];
+    let rent_updateTime = rent_item["refresh_time"]
     let rent_cover = get_rent_cover_img(rent_url, rent_post_id);
 
-    let tmp_array = ["", rent_hyperlink, rent_price, "", "", "", rent_section_name+rent_street_name+" / "+rent_location, "", rent_area, rent_floor, "", "", rent_post_id];
+    let rent_tag = rent_item["rent_tag"];
+
+    let tagStr = rent_tag.filter(itemX => filter_tags.includes(itemX.id)).map(x => x.name).join(",");
+
+    let tmp_array = ["", rent_hyperlink, rent_price, rent_area, rent_floor, tagStr, rent_kind_name+" "+rent_room_str, rent_role_name+" "+rent_role_contact, rent_section_name+rent_street_name+" / "+rent_location, "", "", "", rent_post_id];
     format_rent_array.push(tmp_array);
 
-    let line_message = `${rent_post_id}\n${rent_title}\n${rent_url}\n$ ${rent_price}\n${rent_section_name} ${rent_street_name}\n${rent_location}\n${rent_area}坪，${rent_floor}`;
+    let line_message = `${rent_post_id}\n${rent_role_name}-${rent_role_contact}\n${rent_title}\n${rent_url}\n$ ${rent_price}\n${rent_kind_name} ${rent_room_str}\n${rent_location}\n${rent_area}坪，${rent_floor}\n${tagStr} \n更新時間: ${rent_updateTime}`;
     send_to_line_notify(line_message, rent_cover);
   }
   return format_rent_array;
@@ -125,17 +143,20 @@ function get_rent_cover_img(rent_detail_url, rent_post_id) {
   return "https://www.moedict.tw/%E6%B2%92.png"
 }
 
-function get_rent_data() {
-  const rent_result = get_rent_result();
+function get_rent_data(search_query) {
+  const rent_result = get_rent_result(search_query);
   const rent_json = JSON.parse(rent_result);
   const rent_array = rent_json["data"]["data"];
   
   return rent_array
 }
 
-function get_rent_result() {
+function get_rent_result(search_query) {
   const rent_search_host = "https://rent.591.com.tw/home/search/rsList";
+
   let rent_search_url = `${rent_search_host}${search_query}`;
+
+  Logger.log(rent_search_url);
 
   const header_info = get_csrf_token();
   const csrf_token = header_info[0];
@@ -163,16 +184,19 @@ function get_rent_result() {
 }
 
 function main() {
-  const rent_result = get_rent_data();
-  const rent_info = get_formated_rent_info(list_sheet_name, rent_result);
-  const rent_info_length = rent_info.length;
-  if (rent_info_length == 0) { return }
+  Logger.log("Started With " + search_queryList.length + " Reocrds.");
+  for(let index=0 ; index < search_queryList.length ; index++){
+    const rent_result = get_rent_data(search_queryList[index]);
+    const rent_info = get_formated_rent_info(list_sheet_name, rent_result);
+    const rent_info_length = rent_info.length;
+    if (rent_info_length == 0) { continue }
 
-  let list_sheet = SpreadsheetApp.getActive().getSheetByName(list_sheet_name);
-  list_sheet.insertRows(2, rent_info_length);
+    let list_sheet = SpreadsheetApp.getActive().getSheetByName(list_sheet_name);
+    list_sheet.insertRows(2, rent_info_length);
 
-  let range = list_sheet.getRange(`A2:M${rent_info_length + 1}`);
-  range.setValues(rent_info);
+    let range = list_sheet.getRange(`A2:M${rent_info_length + 1}`);
+    range.setValues(rent_info);
+  }
 }
 
 function send_to_line_notify(message, image_url) {
